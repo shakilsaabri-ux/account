@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Halima Dairy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #f5f0e8;
+            --card: #fffef9;
+            --text: #1a1208;
+            --muted: #7a6e5c;
+            --primary: #2d5a1b;
+            --primary-light: #e8f0e3;
+            --accent: #c17f24;
+            --accent-light: #fdf3e3;
+            --danger: #b91c1c;
+            --danger-light: #fef2f2;
+            --purple: #5b21b6;
+            --purple-light: #ede9fe;
+            --border: #ddd5c0;
+            --shadow: 0 2px 8px rgba(45,90,27,0.08);
+            --radius: 12px;
+            --safe-bottom: env(safe-area-inset-bottom);
+            --safe-top: env(safe-area-inset-top);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            padding-bottom: calc(80px + var(--safe-bottom));
+            padding-top: var(--safe-top);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 16px 16px 12px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+        .header h1 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            font-size: 11px;
+            margin: 2px 0 0;
+            opacity: 0.75;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* BOTTOM TAB BAR — iPhone style */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0; right: 0;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            padding-bottom: var(--safe-bottom);
+            z-index: 200;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 4px 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: var(--muted);
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            transition: color 0.15s;
+            -webkit-appearance: none;
+            min-height: 56px;
+        }
+        .tab-btn .icon { font-size: 20px; line-height: 1; margin-bottom: 3px; }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active .icon { transform: translateY(-1px); }
+
+        /* CONTENT */
+        .content { padding: 16px; }
+
+        .sect { display: none; }
+        .sect.active { display: block; }
+
+        /* CARDS */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 0 0 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* FORM FIELDS */
+        .field { margin-bottom: 12px; }
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+        /* Prevent iOS zoom on focus — font-size must be >= 16px */
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: #fff;
+            color: var(--text);
+            -webkit-appearance: none;
+            appearance: none;
+            transition: border-color 0.15s;
+            outline: none;
+        }
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6e5c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+        input:focus, select:focus { border-color: var(--primary); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .span-2 { grid-column: span 2; }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans', sans-serif;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            letter-spacing: 0.3px;
+            transition: opacity 0.15s, transform 0.1s;
+            margin-top: 4px;
+        }
+        .btn:active { opacity: 0.85; transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: #15803d; color: white; }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-sky { background: #0284c7; color: white; }
+        .btn-wa { background: #25d366; color: white; }
+        .btn-danger-sm {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 1px solid #fecaca;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans', sans-serif;
+            cursor: pointer;
+            -webkit-appearance: none;
+            white-space: nowrap;
+        }
+        .btn-outline-sm {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans', sans-serif;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        /* AUTO-LOG BOX */
+        .auto-box {
+            background: var(--primary-light);
+            border: 1.5px dashed #5a9640;
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .auto-box .card-title { color: var(--primary); border-bottom-color: #b8d4a8; margin-bottom: 12px; }
+
+        /* TABLE */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th {
+            background: var(--bg);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 10px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        td { padding: 11px 12px; border-top: 1px solid var(--border); white-space: nowrap; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        .empty-row td { text-align: center; color: var(--muted); font-style: italic; font-size: 13px; padding: 20px; }
+
+        /* BALANCE CHIP */
+        .bal-chip {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .bal-owed { background: #fef3c7; color: #92400e; }
+        .bal-clear { background: #dcfce7; color: #166534; }
+
+        /* INVOICE */
+        .invoice {
+            background: white;
+            border: 2px solid #222;
+            border-radius: 0;
+            margin-top: 16px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: #111;
+            overflow: hidden;
+            display: none;
+        }
+        .inv-head {
+            background: #111;
+            color: white;
+            padding: 14px;
+            text-align: center;
+        }
+        .inv-head h2 { margin: 0; font-size: 16px; letter-spacing: 2px; }
+        .inv-head p { margin: 3px 0 0; font-size: 11px; opacity: 0.7; }
+        .inv-body { padding: 14px; }
+        .inv-meta { margin-bottom: 12px; font-size: 12px; border-bottom: 1px dashed #999; padding-bottom: 10px; }
+        .inv-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+        .inv-table th { text-align: left; padding: 4px 0; border-bottom: 1px solid #ddd; font-size: 10px; letter-spacing: 1px; }
+        .inv-table td { padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .inv-totals { margin-top: 12px; font-size: 13px; border-top: 2px solid #111; padding-top: 10px; }
+        .inv-totals div { display: flex; justify-content: space-between; padding: 2px 0; }
+        .inv-net { font-size: 15px; font-weight: 700; margin-top: 6px; padding-top: 6px; border-top: 1px solid #111; }
+
+        /* ALERT / TOAST */
+        .toast {
+            position: fixed;
+            bottom: calc(80px + var(--safe-bottom) + 10px);
+            left: 50%; transform: translateX(-50%) translateY(20px);
+            background: #111;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'IBM Plex Sans', sans-serif;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            z-index: 300;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* SECTION HEADER */
+        .sect-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .sect-icon { font-size: 22px; }
+        .sect-title { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 700; }
+
+        /* SUMMARY CHIPS ROW */
+        .chips { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; }
+        .chip {
+            flex-shrink: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-align: center;
+            min-width: 90px;
+        }
+        .chip-val { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 700; color: var(--primary); }
+        .chip-lbl { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🥛 HALIMA DAIRY FARM</h1>
+    <p>Milk Inventory &amp; Bills Manager</p>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+    <button class="tab-btn active" id="tab-supply" onclick="tab('supply')">
+        <span class="icon">✍️</span>Supply
+    </button>
+    <button class="tab-btn" id="tab-yield" onclick="tab('yield')">
+        <span class="icon">🐄</span>Yield
+    </button>
+    <button class="tab-btn" id="tab-payments" onclick="tab('payments')">
+        <span class="icon">💰</span>Cash In
+    </button>
+    <button class="tab-btn" id="tab-customers" onclick="tab('customers')">
+        <span class="icon">👥</span>Accounts
+    </button>
+    <button class="tab-btn" id="tab-billing" onclick="tab('billing')">
+        <span class="icon">📜</span>Bill
+    </button>
+</div>
+
+<div class="content">
+
+    <!-- ====== SUPPLY ====== -->
+    <div id="s-supply" class="sect active">
+        <div class="sect-header"><span class="sect-icon">✍️</span><span class="sect-title">Log Milk Supply</span></div>
+
+        <!-- Auto Log -->
+        <div class="auto-box">
+            <div class="card-title">🚀 Auto-Log Fixed Customers</div>
+            <div class="grid-2">
+                <div class="field"><label>Date</label><input type="date" id="auto-d"></div>
+                <div class="field"><label>Shift</label>
+                    <select id="auto-s">
+                        <option value="Morning">Morning</option>
+                        <option value="Evening">Evening</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-sky" onclick="autoFill()">Auto-Log All Fixed</button>
+        </div>
+
+        <!-- Manual Entry -->
+        <div class="card">
+            <div class="card-title">Manual Entry</div>
+            <form id="f-supply">
+                <div class="field"><label>Customer</label>
+                    <select id="s-cust" required>
+                        <option value="">— Select Customer —</option>
+                    </select>
+                </div>
+                <div class="grid-2">
+                    <div class="field"><label>Shift</label>
+                        <select id="s-shift">
+                            <option value="Morning">Morning</option>
+                            <option value="Evening">Evening</option>
+                        </select>
+                    </div>
+                    <div class="field"><label>Date</label><input type="date" id="s-date" required></div>
+                </div>
+                <div class="field"><label>Liters</label><input type="number" id="s-qty" step="0.1" min="0.1" placeholder="0.0" required inputmode="decimal"></div>
+                <button type="submit" class="btn btn-primary">Save Entry</button>
+            </form>
+        </div>
+
+        <!-- Supply Log Table -->
+        <div class="card">
+            <div class="card-title">Recent Entries</div>
+            <div class="table-wrap">
+                <table><thead><tr><th>Customer</th><th>Date</th><th>Shift</th><th>Qty</th><th></th></tr></thead>
+                <tbody id="b-supply"><tr class="empty-row"><td colspan="5">No entries yet</td></tr></tbody></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== YIELD ====== -->
+    <div id="s-yield" class="sect">
+        <div class="sect-header"><span class="sect-icon">🐄</span><span class="sect-title">Herd Yield Math</span></div>
+        <div class="card">
+            <div class="card-title">Shift Production Formula</div>
+            <form id="f-inv">
+                <div class="grid-2">
+                    <div class="field"><label>Date</label><input type="date" id="i-date" required></div>
+                    <div class="field"><label>Shift</label>
+                        <select id="i-shift">
+                            <option value="Morning">Morning</option>
+                            <option value="Evening">Evening</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field"><label>Opening Balance (Leftover Liters)</label><input type="number" id="i-open" step="0.1" min="0" placeholder="0.0" required inputmode="decimal"></div>
+                <div class="field"><label>Purchased Milk (Other Herd)</label><input type="number" id="i-pur" step="0.1" min="0" placeholder="0.0" required inputmode="decimal"></div>
+                <div class="field"><label>Closing Balance Left</label><input type="number" id="i-close" step="0.1" min="0" placeholder="0.0" required inputmode="decimal"></div>
+                <button type="submit" class="btn btn-primary">Calculate Yield</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="card-title">Yield Records</div>
+            <div class="table-wrap">
+                <table><thead><tr><th>Date</th><th>Shift</th><th>Yield (L)</th><th></th></tr></thead>
+                <tbody id="b-inv"><tr class="empty-row"><td colspan="4">No records yet</td></tr></tbody></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== PAYMENTS ====== -->
+    <div id="s-payments" class="sect">
+        <div class="sect-header"><span class="sect-icon">💰</span><span class="sect-title">Cash Received</span></div>
+        <div class="card">
+            <div class="card-title">Log Payment</div>
+            <form id="f-pay">
+                <div class="field"><label>Customer</label>
+                    <select id="p-cust" required>
+                        <option value="">— Select Customer —</option>
+                    </select>
+                </div>
+                <div class="grid-2">
+                    <div class="field"><label>Amount (₹)</label><input type="number" id="p-amt" min="1" placeholder="0" required inputmode="numeric"></div>
+                    <div class="field"><label>Date</label><input type="date" id="p-date" required></div>
+                </div>
+                <div class="field"><label>Mode</label>
+                    <select id="p-note">
+                        <option value="Cash">Cash</option>
+                        <option value="GPay">GPay</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-purple">Record Payment</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="card-title">Payment History</div>
+            <div class="table-wrap">
+                <table><thead><tr><th>Date</th><th>Customer</th><th>Paid</th><th>Mode</th><th></th></tr></thead>
+                <tbody id="b-pay"><tr class="empty-row"><td colspan="5">No payments yet</td></tr></tbody></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== CUSTOMERS ====== -->
+    <div id="s-customers" class="sect">
+        <div class="sect-header"><span class="sect-icon">👥</span><span class="sect-title">Customer Accounts</span></div>
+        <div class="card">
+            <div class="card-title">Register New Account</div>
+            <form id="f-cust">
+                <div class="field"><label>M/S Customer Name</label><input type="text" id="c-name" placeholder="e.g. M/S Sharma Store" required autocorrect="off" autocapitalize="words"></div>
+                <div class="grid-2">
+                    <div class="field"><label>Supply Type</label>
+                        <select id="c-type" onchange="toggleFq(this.value)">
+                            <option value="irregular">Irregular</option>
+                            <option value="fixed">Fixed Daily</option>
+                        </select>
+                    </div>
+                    <div class="field" id="fq" style="display:none;"><label>Fixed (L)</label><input type="number" id="c-fq" step="0.1" min="0" value="0" inputmode="decimal"></div>
+                </div>
+                <div class="grid-2">
+                    <div class="field"><label>Rate / Liter (₹)</label><input type="number" id="c-rate" step="0.1" min="0" placeholder="0.00" required inputmode="decimal"></div>
+                    <div class="field"><label>Opening Balance (₹)</label><input type="number" id="c-bal" step="0.1" min="0" value="0" inputmode="decimal"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Register Customer</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="card-title">All Accounts</div>
+            <div id="cust-list"></div>
+        </div>
+    </div>
+
+    <!-- ====== BILLING ====== -->
+    <div id="s-billing" class="sect">
+        <div class="sect-header"><span class="sect-icon">📜</span><span class="sect-title">Invoice Generator</span></div>
+        <div class="card">
+            <div class="card-title">Generate Bill</div>
+            <div class="field"><label>Customer</label>
+                <select id="b-select">
+                    <option value="">— Select Customer —</option>
+                </select>
+            </div>
+            <div class="field"><label>Billing Cycle</label>
+                <select onchange="cycle(this.value)">
+                    <option value="">— Quick Select —</option>
+                    <option value="week">This Week (Sun–Sat)</option>
+                    <option value="month">Full Month</option>
+                    <option value="10">Days 1–10</option>
+                    <option value="20">Days 11–20</option>
+                    <option value="30">Days 21–End</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="grid-2">
+                <div class="field"><label>From</label><input type="date" id="b-start"></div>
+                <div class="field"><label>To</label><input type="date" id="b-end"></div>
+            </div>
+            <button class="btn btn-success" onclick="bill()">Generate Invoice</button>
+            <button id="wa-btn" class="btn btn-wa" style="display:none; margin-top:10px;" onclick="sendWA()">📲 Share via WhatsApp</button>
+        </div>
+        <div id="invoice-view" class="invoice"></div>
+    </div>
+
+</div><!-- /content -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ── DATA ───────────────────────────────────────────
+    var custs    = JSON.parse(localStorage.getItem('mCusts'))    || [];
+    var supplies = JSON.parse(localStorage.getItem('mSupplies')) || [];
+    var invs     = JSON.parse(localStorage.getItem('mInvs'))     || [];
+    var pays     = JSON.parse(localStorage.getItem('mPays'))     || [];
+    var activeWAText = '';
+
+    function save() {
+        localStorage.setItem('mCusts',    JSON.stringify(custs));
+        localStorage.setItem('mSupplies', JSON.stringify(supplies));
+        localStorage.setItem('mInvs',     JSON.stringify(invs));
+        localStorage.setItem('mPays',     JSON.stringify(pays));
+    }
+
+    // ── TOAST ──────────────────────────────────────────
+    function toast(msg, duration) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function() { t.classList.remove('show'); }, duration || 2200);
+    }
+
+    // ── TAB SWITCH ─────────────────────────────────────
+    function tab(name) {
+        document.querySelectorAll('.sect').forEach(function(s) { s.classList.remove('active'); });
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+        document.getElementById('s-' + name).classList.add('active');
+        document.getElementById('tab-' + name).classList.add('active');
+        window.scrollTo(0, 0);
+        render();
+    }
+
+    // ── HELPERS ────────────────────────────────────────
+    function toggleFq(val) {
+        document.getElementById('fq').style.display = (val === 'fixed') ? 'block' : 'none';
+    }
+
+    function fmt(d) {
+        // format YYYY-MM-DD to DD/MM
+        if (!d) return '';
+        var parts = d.split('-');
+        return parts[2] + '/' + parts[1];
+    }
+
+    function localDateStr(date) {
+        var d = date || new Date();
+        var y = d.getFullYear();
+        var m = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+    }
+
+    function balCal(c) {
+        var b = c.bal || 0;
+        supplies.forEach(function(s) { if (s.customerId === c.id) b += (s.qty * c.rate); });
+        pays.forEach(function(p) { if (p.customerId === c.id) b -= p.amount; });
+        return b;
+    }
+
+    function populateSelect(id, placeholder) {
+        var el = document.getElementById(id);
+        var prev = el.value;
+        el.innerHTML = placeholder ? '<option value="">' + placeholder + '</option>' : '';
+        custs.forEach(function(c) {
+            var o = document.createElement('option');
+            o.value = c.id; o.textContent = c.name;
+            el.appendChild(o);
+        });
+        if (prev) el.value = prev;
+    }
+
+    // ── BILLING CYCLE ──────────────────────────────────
+    function cycle(v) {
+        if (!v || v === 'custom') return;
+        var d = new Date(), y = d.getFullYear(), m = d.getMonth();
+        var s, e;
+        if (v === 'week') {
+            var day = d.getDay();
+            s = new Date(y, m, d.getDate() - day);
+            e = new Date(y, m, d.getDate() - day + 6);
+        } else if (v === 'month') {
+            s = new Date(y, m, 1); e = new Date(y, m + 1, 0);
+        } else if (v === '10') {
+            s = new Date(y, m, 1); e = new Date(y, m, 10);
+        } else if (v === '20') {
+            s = new Date(y, m, 11); e = new Date(y, m, 20);
+        } else if (v === '30') {
+            s = new Date(y, m, 21); e = new Date(y, m + 1, 0);
+        }
+        document.getElementById('b-start').value = localDateStr(s);
+        document.getElementById('b-end').value   = localDateStr(e);
+    }
+
+    // ── RENDER ─────────────────────────────────────────
+    function render() {
+        populateSelect('s-cust', '— Select Customer —');
+        populateSelect('p-cust', '— Select Customer —');
+        populateSelect('b-select', '— Select Customer —');
+
+        // Supply table
+        var sb = document.getElementById('b-supply');
+        sb.innerHTML = '';
+        var revSupplies = supplies.slice().reverse();
+        if (revSupplies.length === 0) {
+            sb.innerHTML = '<tr class="empty-row"><td colspan="5">No entries yet</td></tr>';
+        } else {
+            revSupplies.forEach(function(s, i) {
+                var c = custs.find(function(cu) { return cu.id === s.customerId; });
+                sb.innerHTML += '<tr>' +
+                    '<td><strong>' + (c ? c.name : '—') + '</strong></td>' +
+                    '<td>' + fmt(s.date) + '</td>' +
+                    '<td>' + s.shift.substring(0, 3) + '</td>' +
+                    '<td>' + s.qty + 'L</td>' +
+                    '<td><button class="btn-danger-sm" onclick="delS(' + i + ')">Del</button></td>' +
+                '</tr>';
+            });
+        }
+
+        // Yield table
+        var ib = document.getElementById('b-inv');
+        ib.innerHTML = '';
+        var revInvs = invs.slice().reverse();
+        if (revInvs.length === 0) {
+            ib.innerHTML = '<tr class="empty-row"><td colspan="4">No records yet</td></tr>';
+        } else {
+            revInvs.forEach(function(iv, i) {
+                ib.innerHTML += '<tr>' +
+                    '<td>' + fmt(iv.date) + '</td>' +
+                    '<td>' + iv.shift.substring(0, 3) + '</td>' +
+                    '<td><strong>' + iv.yield.toFixed(1) + 'L</strong></td>' +
+                    '<td><button class="btn-danger-sm" onclick="delI(' + i + ')">Del</button></td>' +
+                '</tr>';
+            });
+        }
+
+        // Payments table
+        var pb = document.getElementById('b-pay');
+        pb.innerHTML = '';
+        var revPays = pays.slice().reverse();
+        if (revPays.length === 0) {
+            pb.innerHTML = '<tr class="empty-row"><td colspan="5">No payments yet</td></tr>';
+        } else {
+            revPays.forEach(function(p, i) {
+                var c = custs.find(function(cu) { return cu.id === p.customerId; });
+                pb.innerHTML += '<tr>' +
+                    '<td>' + fmt(p.date) + '</td>' +
+                    '<td>' + (c ? c.name : '—') + '</td>' +
+                    '<td><strong>₹' + p.amount + '</strong></td>' +
+                    '<td>' + (p.notes || 'Cash') + '</td>' +
+                    '<td><button class="btn-danger-sm" onclick="delP(' + i + ')">Del</button></td>' +
+                '</tr>';
+            });
+        }
+
+        // Customer list (cards, not table)
+        var cl = document.getElementById('cust-list');
+        cl.innerHTML = '';
+        if (custs.length === 0) {
+            cl.innerHTML = '<p style="color:var(--muted); text-align:center; font-style:italic; font-size:13px; padding:10px 0;">No customers registered yet</p>';
+        } else {
+            custs.forEach(function(c, i) {
+                var bal = balCal(c);
+                var chipCls = bal > 0 ? 'bal-chip bal-owed' : 'bal-chip bal-clear';
+                var balTxt = bal > 0 ? 'Owes ₹' + bal.toFixed(2) : 'Clear ✓';
+                cl.innerHTML +=
+                    '<div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">' +
+                        '<div>' +
+                            '<div style="font-weight:700; font-size:14px;">' + c.name + '</div>' +
+                            '<div style="font-size:12px; color:var(--muted); margin-top:2px;">₹' + c.rate + '/L · ' + (c.type === 'fixed' ? 'Fixed ' + c.fq + 'L' : 'Irregular') + '</div>' +
+                        '</div>' +
+                        '<div style="display:flex; align-items:center; gap:8px;">' +
+                            '<span class="' + chipCls + '">' + balTxt + '</span>' +
+                            '<button class="btn-danger-sm" onclick="delC(' + i + ')">Del</button>' +
+                        '</div>' +
+                    '</div>';
+            });
+        }
+    }
+
+    // ── DELETE FUNCTIONS ───────────────────────────────
+    function delS(i) {
+        if (!confirm('Delete this supply entry?')) return;
+        supplies.splice(supplies.length - 1 - i, 1); save(); render();
+    }
+    function delI(i) {
+        if (!confirm('Delete this yield record?')) return;
+        invs.splice(invs.length - 1 - i, 1); save(); render();
+    }
+    function delP(i) {
+        if (!confirm('Delete this payment?')) return;
+        pays.splice(pays.length - 1 - i, 1); save(); render();
+    }
+    function delC(i) {
+        if (!confirm('Delete "' + custs[i].name + '"? This will not delete their supply/payment history.')) return;
+        custs.splice(i, 1); save(); render();
+    }
+
+    // ── AUTO FILL ──────────────────────────────────────
+    function autoFill() {
+        var dt = document.getElementById('auto-d').value;
+        var sh = document.getElementById('auto-s').value;
+        if (!dt) { toast('⚠️ Please select a date'); return; }
+        var count = 0;
+        custs.forEach(function(c) {
+            if (c.type === 'fixed' && c.fq > 0) {
+                var exists = supplies.some(function(s) {
+                    return s.customerId === c.id && s.date === dt && s.shift === sh;
+                });
+                if (!exists) {
+                    supplies.push({ customerId: c.id, shift: sh, date: dt, qty: c.fq });
+                    count++;
+                }
+            }
+        });
+        save(); render();
+        toast(count > 0 ? '✅ Auto-logged ' + count + ' customers' : 'ℹ️ Already logged or no fixed customers');
+    }
+
+    // ── FORMS ──────────────────────────────────────────
+    document.getElementById('f-cust').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var name = document.getElementById('c-name').value.trim();
+        if (!name) return;
+        custs.push({
+            id: Date.now().toString(),
+            name: name,
+            type: document.getElementById('c-type').value,
+            fq: parseFloat(document.getElementById('c-fq').value) || 0,
+            rate: parseFloat(document.getElementById('c-rate').value) || 0,
+            bal: parseFloat(document.getElementById('c-bal').value) || 0
+        });
+        save(); this.reset();
+        document.getElementById('fq').style.display = 'none';
+        render();
+        toast('✅ Customer registered!');
+    });
+
+    document.getElementById('f-supply').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var cid = document.getElementById('s-cust').value;
+        if (!cid) { toast('⚠️ Select a customer'); return; }
+        supplies.push({
+            customerId: cid,
+            shift: document.getElementById('s-shift').value,
+            date: document.getElementById('s-date').value,
+            qty: parseFloat(document.getElementById('s-qty').value)
+        });
+        save();
+        document.getElementById('s-qty').value = '';
+        render();
+        toast('✅ Supply entry saved!');
+    });
+
+    document.getElementById('f-pay').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var cid = document.getElementById('p-cust').value;
+        if (!cid) { toast('⚠️ Select a customer'); return; }
+        pays.push({
+            customerId: cid,
+            amount: parseFloat(document.getElementById('p-amt').value),
+            date: document.getElementById('p-date').value,
+            notes: document.getElementById('p-note').value || 'Cash'
+        });
+        save(); this.reset();
+        document.getElementById('p-date').value = localDateStr();
+        render();
+        toast('✅ Payment recorded!');
+    });
+
+    document.getElementById('f-inv').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var dt = document.getElementById('i-date').value;
+        var sh = document.getElementById('i-shift').value;
+        var open  = parseFloat(document.getElementById('i-open').value) || 0;
+        var pur   = parseFloat(document.getElementById('i-pur').value) || 0;
+        var close = parseFloat(document.getElementById('i-close').value) || 0;
+        var totSupply = 0;
+        supplies.forEach(function(s) { if (s.date === dt && s.shift === sh) totSupply += s.qty; });
+        var yd = totSupply + close - open - pur;
+        if (yd < 0) { toast('⚠️ Yield is negative — check values'); return; }
+        invs.push({ date: dt, shift: sh, yield: yd });
+        save(); this.reset();
+        document.getElementById('i-date').value = localDateStr();
+        render();
+        toast('✅ Yield calculated: ' + yd.toFixed(1) + 'L');
+    });
+
+    // ── BILLING ────────────────────────────────────────
+    function bill() {
+        var cid      = document.getElementById('b-select').value;
+        var startStr = document.getElementById('b-start').value;
+        var endStr   = document.getElementById('b-end').value;
+        if (!cid)      { toast('⚠️ Select a customer'); return; }
+        if (!startStr) { toast('⚠️ Select start date'); return; }
+        if (!endStr)   { toast('⚠️ Select end date'); return; }
+        if (startStr > endStr) { toast('⚠️ Start must be before end'); return; }
+
+        var c = custs.find(function(cu) { return cu.id === cid; });
+        if (!c) { toast('⚠️ Customer not found'); return; }
+
+        var start = new Date(startStr + 'T00:00:00');
+        var end   = new Date(endStr   + 'T23:59:59');
+
+        var pastBal = c.bal || 0;
+        var currentCharge = 0;
+        var paidCycle = 0;
+        var invRows = '';
+        var waItems = '';
+
+        supplies.forEach(function(s) {
+            if (s.customerId !== cid) return;
+            var sd = new Date(s.date + 'T00:00:00');
+            var charge = s.qty * c.rate;
+            if (sd < start) {
+                pastBal += charge;
+            } else if (sd <= end) {
+                currentCharge += charge;
+                invRows += '<tr><td>' + s.date + ' (' + s.shift.substring(0, 3) + ')</td><td>' + s.qty + 'L</td><td>₹' + charge.toFixed(2) + '</td></tr>';
+                waItems += s.date + ' (' + s.shift.substring(0, 3) + '): ' + s.qty + 'L = Rs.' + charge.toFixed(2) + '\n';
+            }
+        });
+
+        pays.forEach(function(p) {
+            if (p.customerId !== cid) return;
+            var pd = new Date(p.date + 'T00:00:00');
+            if (pd < start) {
+                pastBal -= p.amount;
+            } else if (pd <= end) {
+                paidCycle += p.amount;
+            }
+        });
+
+        var netDue = currentCharge + pastBal - paidCycle;
+
+        // HTML Invoice
+        var iv = document.getElementById('invoice-view');
+        iv.style.display = 'block';
+        iv.innerHTML =
+            '<div class="inv-head"><h2>HALIMA DAIRY FARM</h2><p>Invoice / Bill</p></div>' +
+            '<div class="inv-body">' +
+            '<div class="inv-meta">' +
+            '<div><strong>M/S:</strong> ' + c.name + '</div>' +
+            '<div><strong>Rate:</strong> ₹' + c.rate + '/L</div>' +
+            '<div><strong>Period:</strong> ' + startStr + ' → ' + endStr + '</div>' +
+            '</div>' +
+            '<table class="inv-table"><thead><tr><th>Date</th><th>Milk</th><th>Amount</th></tr></thead>' +
+            '<tbody>' + (invRows || '<tr><td colspan="3" style="text-align:center; padding:10px; color:#999;">No deliveries in this period</td></tr>') + '</tbody>' +
+            '</table>' +
+            '<div class="inv-totals">' +
+            '<div><span>Previous Balance</span><span>₹' + pastBal.toFixed(2) + '</span></div>' +
+            '<div><span>Current Charges</span><span>+ ₹' + currentCharge.toFixed(2) + '</span></div>' +
+            '<div><span>Payments Received</span><span>- ₹' + paidCycle.toFixed(2) + '</span></div>' +
+            '<div class="inv-net"><span>NET DUE</span><span>₹' + netDue.toFixed(2) + '</span></div>' +
+            '</div>' +
+            '<div style="font-size:11px; color:#999; margin-top:12px; text-align:center;">Thank you for your business!</div>' +
+            '</div>';
+
+        // WhatsApp text
+        activeWAText =
+            '*🥛 HALIMA DAIRY FARM*\n' +
+            '━━━━━━━━━━━━━━━━━━━━\n' +
+            '*M/S:* ' + c.name + '\n' +
+            '*Period:* ' + startStr + ' to ' + endStr + '\n\n' +
+            '*DELIVERY DETAILS:*\n' +
+            waItems +
+            '━━━━━━━━━━━━━━━━━━━━\n' +
+            '*Prev Balance:*  Rs.' + pastBal.toFixed(2) + '\n' +
+            '*Current Bill:*  Rs.' + currentCharge.toFixed(2) + '\n' +
+            '*Payments Recd:* Rs.' + paidCycle.toFixed(2) + '\n' +
+            '━━━━━━━━━━━━━━━━━━━━\n' +
+            '*NET DUE: Rs.' + netDue.toFixed(2) + '*\n\n' +
+            '_Thank you! 🙏_';
+
+        document.getElementById('wa-btn').style.display = 'block';
+
+        // Scroll to invoice
+        setTimeout(function() { iv.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);
+    }
+
+    // ── WHATSAPP — FIXED URL ───────────────────────────
+    function sendWA() {
+        var url = 'https://wa.me/?text=' + encodeURIComponent(activeWAText);
+        window.open(url, '_blank');
+    }
+
+    // ── INIT ───────────────────────────────────────────
+    document.getElementById('s-date').value  = localDateStr();
+    document.getElementById('i-date').value  = localDateStr();
+    document.getElementById('p-date').value  = localDateStr();
+    document.getElementById('auto-d').value  = localDateStr();
+    render();
+</script>
+</body>
+</html>
